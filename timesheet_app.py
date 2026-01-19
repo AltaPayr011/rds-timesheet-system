@@ -235,6 +235,7 @@ def user_management_page():
 # Employee management page
 def employee_management_page():
     st.title("👤 Employee Management")
+    st.write("*Add, edit, or update employee information and working hours*")
     
     employee_data = load_employee_data()
     
@@ -295,7 +296,19 @@ def employee_management_page():
                     }
                     save_employee_data(employee_data)
                     st.success(f"✅ Employee '{first_name} {last_name}' added successfully")
-                    st.rerun()
+                    
+                    # Show download option for Streamlit Cloud persistence
+                    st.info("💡 **For Streamlit Cloud users:** Download the updated employee_data.json file and update it in your GitHub repository to make this change permanent.")
+                    
+                    import json
+                    emp_json = json.dumps(employee_data, indent=2)
+                    st.download_button(
+                        label="📥 Download employee_data.json",
+                        data=emp_json,
+                        file_name="employee_data.json",
+                        mime="application/json",
+                        key="download_after_add"
+                    )
             else:
                 st.error("Please fill in all required fields (marked with *)")
     
@@ -371,7 +384,19 @@ def employee_management_page():
                     }
                     save_employee_data(employee_data)
                     st.success(f"✅ Employee '{edit_first_name} {edit_last_name}' updated successfully")
-                    st.rerun()
+                    
+                    # Show download option for Streamlit Cloud persistence
+                    st.info("💡 **For Streamlit Cloud users:** Download the updated employee_data.json file and update it in your GitHub repository to make this change permanent.")
+                    
+                    import json
+                    emp_json = json.dumps(employee_data, indent=2)
+                    st.download_button(
+                        label="📥 Download employee_data.json",
+                        data=emp_json,
+                        file_name="employee_data.json",
+                        mime="application/json",
+                        key="download_after_edit"
+                    )
     
     with tab3:
         st.subheader("Delete Employee")
@@ -402,7 +427,19 @@ def employee_management_page():
                     del employee_data[delete_key]
                     save_employee_data(employee_data)
                     st.success(f"✅ Employee '{delete_name}' deleted successfully")
-                    st.rerun()
+                    
+                    # Show download option for Streamlit Cloud persistence
+                    st.info("💡 **For Streamlit Cloud users:** Download the updated employee_data.json file and update it in your GitHub repository to make this change permanent.")
+                    
+                    import json
+                    emp_json = json.dumps(employee_data, indent=2)
+                    st.download_button(
+                        label="📥 Download employee_data.json",
+                        data=emp_json,
+                        file_name="employee_data.json",
+                        mime="application/json",
+                        key="download_after_delete"
+                    )
                 else:
                     st.error("Please type 'DELETE' to confirm")
     
@@ -799,9 +836,12 @@ def main_app():
         st.write(f"**User:** {st.session_state['username']}")
         st.write(f"**Role:** {'Admin' if st.session_state.get('is_admin', False) else 'User'}")
         
-        menu_options = ["📊 Generate Report", "🔒 Change Password"]
+        # Employee Management available to all users
+        menu_options = ["📊 Generate Report", "👤 Employee Management", "🔒 Change Password"]
+        
+        # User Management only for admins
         if st.session_state.get('is_admin', False):
-            menu_options.extend(["👤 Employee Management", "👥 User Management"])
+            menu_options.append("👥 User Management")
         
         page = st.radio("Menu", menu_options)
         
