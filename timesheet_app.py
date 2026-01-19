@@ -114,6 +114,63 @@ def login_page():
             else:
                 st.error("Invalid username or password")
 
+# Change password page
+def change_password_page():
+    st.title("🔒 Change Password")
+    
+    st.write(f"**Logged in as:** {st.session_state['username']}")
+    
+    users = load_users()
+    
+    st.markdown("---")
+    
+    col1, col2, col3 = st.columns([1, 2, 1])
+    
+    with col2:
+        st.subheader("Change Your Password")
+        
+        current_password = st.text_input("Current Password", type="password", key="current_pwd")
+        new_password = st.text_input("New Password", type="password", key="new_pwd")
+        confirm_password = st.text_input("Confirm New Password", type="password", key="confirm_pwd")
+        
+        st.markdown("**Password Requirements:**")
+        st.info("• Minimum 6 characters recommended\n• Use a mix of letters and numbers\n• Don't share your password with others")
+        
+        if st.button("Change Password", type="primary", use_container_width=True):
+            # Validate current password
+            if not verify_password(st.session_state['username'], current_password, users):
+                st.error("❌ Current password is incorrect")
+            elif not new_password:
+                st.error("❌ Please enter a new password")
+            elif len(new_password) < 6:
+                st.warning("⚠️ Password should be at least 6 characters long")
+            elif new_password != confirm_password:
+                st.error("❌ New passwords do not match")
+            elif new_password == current_password:
+                st.warning("⚠️ New password must be different from current password")
+            else:
+                # Update password
+                users[st.session_state['username']]["password"] = hash_password(new_password)
+                save_users(users)
+                st.success("✅ Password changed successfully!")
+                st.balloons()
+                
+                # Show download option for Streamlit Cloud persistence
+                st.markdown("---")
+                st.info("💡 **For Streamlit Cloud users:** Download the updated users.json file and update it in your GitHub repository to make this change permanent.")
+                
+                import json
+                users_json = json.dumps(users, indent=2)
+                st.download_button(
+                    label="📥 Download users.json",
+                    data=users_json,
+                    file_name="users.json",
+                    mime="application/json"
+                )
+                
+                st.markdown("---")
+                st.info("💡 Please use your new password the next time you log in.")
+
 # User management page
 def user_management_page():
     st.title("👥 User Management")
@@ -742,7 +799,7 @@ def main_app():
         st.write(f"**User:** {st.session_state['username']}")
         st.write(f"**Role:** {'Admin' if st.session_state.get('is_admin', False) else 'User'}")
         
-        menu_options = ["📊 Generate Report"]
+        menu_options = ["📊 Generate Report", "🔒 Change Password"]
         if st.session_state.get('is_admin', False):
             menu_options.extend(["👤 Employee Management", "👥 User Management"])
         
@@ -759,6 +816,8 @@ def main_app():
         user_management_page()
     elif page == "👤 Employee Management":
         employee_management_page()
+    elif page == "🔒 Change Password":
+        change_password_page()
     else:
         generate_report_page()
 
