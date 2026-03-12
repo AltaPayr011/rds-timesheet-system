@@ -557,7 +557,7 @@ def generate_excel_report(timesheet_data, employee_data, skip_unknown):
     detail_sheet.title = "Timesheet Detail"
     
     # Headers
-    headers = ["Employee Name", "Employee #", "Date", "Day of Week", "Time In", "Time Out", "Hours", "Job/Absence Type", "Shift"]
+    headers = ["Employee Name", "Employee #", "Date", "Day of Week", "Time In", "Time Out", "Hours", "Job/Absence Type", "Shift", "Short Time"]
     for col, header in enumerate(headers, 1):
         cell = detail_sheet.cell(1, col, header)
         cell.font = Font(bold=True, color="FFFFFF")
@@ -573,6 +573,7 @@ def generate_excel_report(timesheet_data, employee_data, skip_unknown):
     detail_sheet.column_dimensions['G'].width = 10
     detail_sheet.column_dimensions['H'].width = 30
     detail_sheet.column_dimensions['I'].width = 25
+    detail_sheet.column_dimensions['J'].width = 12
     
     # Style fills
     grey_fill = PatternFill(start_color="D3D3D3", end_color="D3D3D3", fill_type="solid")
@@ -595,6 +596,9 @@ def generate_excel_report(timesheet_data, employee_data, skip_unknown):
     
     row = 2
     
+    # Track short time per employee (only days with >= 10 minutes)
+    employee_short_time = {}
+    
     # Process each employee
     for emp_name in sorted(timesheet_data.keys()):
         # Find employee key
@@ -612,21 +616,48 @@ def generate_excel_report(timesheet_data, employee_data, skip_unknown):
         
         entries = timesheet_data[emp_name]
         
-        # Create date lookup
+        # Create date lookup with hours per date
         entry_by_date = {}
+        hours_by_date = defaultdict(float)
+        
         for entry in entries:
             date_str = entry['date_str']
             if date_str not in entry_by_date:
                 entry_by_date[date_str] = []
             entry_by_date[date_str].append(entry)
+            hours_by_date[date_str] += entry['hours']
         
         # Check if this is Eunice or Veronica for special filtering
         is_eunice = "Eunice" in emp_name
         is_veronica = "Veronica" in emp_name
         
+        # Track short time for days with >= 10 minutes
+        valid_short_time = 0.0
+        
         # Process all dates
         for date_obj, day_name in dates:
             date_str = date_obj.strftime("%Y/%m/%d")
+            
+            # Calculate required hours for this specific day
+            required_for_day = 0.0
+            if emp_key and emp_key in employee_data:
+                required_for_day = employee_data[emp_key]['required_hours'].get(day_name, 0.0)
+            else:
+                # Default schedule
+                if day_name in ["Monday", "Tuesday", "Wednesday", "Thursday"]:
+                    required_for_day = 8.75
+                elif day_name == "Friday":
+                    required_for_day = 5.0
+            
+            # Calculate actual hours worked this day
+            actual_hours_day = hours_by_date.get(date_str, 0.0)
+            
+            # Calculate short time for this day
+            short_time_day = max(0, required_for_day - actual_hours_day)
+            
+            # Only count short time if >= 10 minutes (0.1667 hours)
+            if short_time_day >= 0.1667:
+                valid_short_time += short_time_day
             
             # Skip certain days for specific employees if no transactions
             if date_str not in entry_by_date:
@@ -636,6 +667,8 @@ def generate_excel_report(timesheet_data, employee_data, skip_unknown):
                     continue  # Skip Fridays for Veronica if no transactions
             
             if date_str in entry_by_date:
+                # Show first entry with short time, rest without
+                first_entry = True
                 for entry in entry_by_date[date_str]:
                     detail_sheet.cell(row, 1, emp_name)
                     detail_sheet.cell(row, 2, emp_number)
@@ -646,15 +679,30 @@ def generate_excel_report(timesheet_data, employee_data, skip_unknown):
                     detail_sheet.cell(row, 7, entry['hours'])
                     detail_sheet.cell(row, 8, entry['job_type'])
                     detail_sheet.cell(row, 9, entry['shift'])
+                    
+                    # Show short time only on first row for this date
+                    if first_entry and short_time_day > 0:
+                        detail_sheet.cell(row, 10, round(short_time_day, 2))
+                    
+                    first_entry = False
                     row += 1
             else:
+                # Grey row for missing date
                 detail_sheet.cell(row, 1, emp_name).fill = grey_fill
                 detail_sheet.cell(row, 2, emp_number).fill = grey_fill
                 detail_sheet.cell(row, 3, date_str).fill = grey_fill
                 detail_sheet.cell(row, 4, day_name).fill = grey_fill
                 for col in range(5, 10):
                     detail_sheet.cell(row, col).fill = grey_fill
+                
+                # Show short time for missing days
+                if short_time_day > 0:
+                    detail_sheet.cell(row, 10, round(short_time_day, 2)).fill = grey_fill
+                
                 row += 1
+        
+        # Store valid short time for this employee (only days >= 10 minutes)
+        employee_short_time[emp_name] = valid_short_time
         
         # Calculate summary
         job_totals = defaultdict(float)
@@ -664,14 +712,14 @@ def generate_excel_report(timesheet_data, employee_data, skip_unknown):
         # Add summary rows
         detail_sheet.cell(row, 1, f"{emp_name} - SUMMARY").font = Font(bold=True)
         detail_sheet.cell(row, 1).fill = summary_fill
-        for col in range(2, 10):
+        for col in range(2, 11):
             detail_sheet.cell(row, col).fill = summary_fill
         row += 1
         
         for job_type in sorted(job_totals.keys()):
             detail_sheet.cell(row, 3, job_type).fill = summary_fill
             detail_sheet.cell(row, 7, round(job_totals[job_type], 2)).fill = summary_fill
-            for col in [1, 2, 4, 5, 6, 8, 9]:
+            for col in [1, 2, 4, 5, 6, 8, 9, 10]:
                 detail_sheet.cell(row, col).fill = summary_fill
             row += 1
     
@@ -772,7 +820,9 @@ def generate_excel_report(timesheet_data, employee_data, skip_unknown):
         
         # Calculate required hours based on employee schedule
         required_hours = calculate_required_hours(emp_key, dates, employee_data)
-        short_time = max(0, required_hours - total_regular)
+        
+        # Use the tracked short time (only days with >= 10 minutes)
+        short_time = employee_short_time.get(emp_name, 0.0)
         
         # Write data
         col_idx = 1
