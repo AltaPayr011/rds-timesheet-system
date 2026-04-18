@@ -1,153 +1,167 @@
-# RDS Timesheet System - Setup & Usage Guide
+# RDS Timesheet System v4.6
 
-## 📋 Overview
-This is a secure, web-based timesheet management system for RDS with:
-- ✅ User login system (Users + Admin)
-- ✅ HTML file upload from OpenTimeClock
-- ✅ Automatic Excel report generation
-- ✅ Individual employee schedule support
-- ✅ User management (admin only)
+Professional timesheet processing system for RDS with MEIBC compliance, public holiday overtime reclassification, and comprehensive reporting.
 
-## 🚀 Quick Start
+## 🌟 Features
 
-### Files Needed
-Make sure all these files are in the same folder:
+### Core Functionality
+- **HTML Timesheet Parsing** - Import OpenTimeClock HTML exports
+- **Employee Database** - 33 employees with MEIBC member identification
+- **Excel Report Generation** - Detail and Summary sheets with comprehensive overtime tracking
+- **Authentication System** - Secure login with role-based access
+- **Public Holiday Support** - Automatic overtime reclassification for public holidays
+- **Standby Days Tracking** - Track standby days per employee per period
+
+### Overtime Processing
+- **Regular Days** - OT 1.5, Call Out 1.5, Travel Overtime
+- **Sundays** - OT 2.0, Call Out 2.0 with MEIBC minimums
+- **Public Holidays** - Multi-tier reclassification (OT 1.0, 1.3, 2.0, 2.5)
+- **MEIBC Compliance** - Separate rules for MEIBC members vs non-MEIBC employees
+- **Dual Credit System** - MEIBC Saturday public holiday dual credit calculation
+
+### Reporting Features
+- **Detail Sheet** - Complete audit trail with original job types
+- **Summary Sheet** - Payroll-ready totals with reclassified overtime
+- **Required Hours** - Per-employee schedule tracking
+- **Short Time** - Automatic calculation of hours shortfall
+- **Standby Days** - Dedicated column for standby tracking
+
+## 📋 Requirements
+
 ```
-your-project-folder/
-├── timesheet_app.py
-├── employee_data.json
-├── RDS_Logo.jpg
-└── requirements.txt
+streamlit
+pandas
+openpyxl
+beautifulsoup4
+lxml
 ```
 
-### Installation
+## 🚀 Installation
 
-1. **Install Python** (if not already installed)
-   - Download from https://www.python.org/downloads/
-   - Make sure to check "Add Python to PATH" during installation
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/rds-timesheet-system.git
+cd rds-timesheet-system
+```
 
-2. **Install dependencies**
-   Open terminal/command prompt in your project folder and run:
-   ```bash
-   pip install -r requirements.txt
-   ```
+2. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
 
-3. **Run the app**
-   ```bash
-   streamlit run timesheet_app.py
-   ```
+3. Ensure all files are present:
+- `timesheet_app.py` - Main application
+- `employee_data.json` - Employee database
+- `users.json` - Authentication data
+- `requirements.txt` - Python dependencies
+- `RDS_Logo.jpg` - Company logo
 
-4. **Access the app**
-   - The app will open automatically in your browser
-   - If not, go to: http://localhost:8501
+## 💻 Usage
 
-## 🔐 Login Credentials
+### Starting the Application
 
-### Default Admin Account
-- **Username:** admin
-- **Password:** admin123
+```bash
+streamlit run timesheet_app.py
+```
 
-⚠️ **IMPORTANT:** Change the admin password immediately after first login!
+The app will open in your default browser at `http://localhost:8501`
 
-## 👥 User Management
+### Login
 
-### Admin Capabilities
-- ✅ Generate reports
-- ✅ Create new users
-- ✅ Reset user passwords
-- ✅ View all users
+**Default credentials:**
+- Username: `admin`
+- Password: `admin123`
 
-### Regular User Capabilities
-- ✅ Generate reports
-- ❌ Cannot create users
-- ❌ Cannot reset passwords
+⚠️ **Security Note:** Change the default password in `users.json` before deployment!
 
-### Creating New Users (Admin Only)
-1. Log in as admin
-2. Go to "👥 User Management"
-3. Enter username and password
-4. Check "Admin User" if needed
-5. Click "Create User"
+### Workflow
 
-### Resetting Passwords (Admin Only)
-1. Go to "👥 User Management"
-2. Scroll to "Reset Password" section
-3. Select user from dropdown
-4. Enter new password
-5. Click "Reset Password"
+1. **Login** - Authenticate with credentials
+2. **Upload HTML** - Upload OpenTimeClock HTML export file
+3. **Select Public Holidays** - Choose dates that are public holidays
+4. **Enter Standby Days** - Input standby days for each employee (optional)
+5. **Set Options** - Choose report preferences
+6. **Generate Report** - Download Excel file with Detail and Summary sheets
 
-## 📊 Generating Reports
+## 📊 Overtime Rules
 
-### Step 1: Export from OpenTimeClock
-1. Log into OpenTimeClock
-2. Go to **List View**
-3. Select your **date range** (start and end dates)
-4. Select **"All Users"** from the employee list
-5. File → Save Page As → **"Webpage, Complete"**
-6. Save the HTML file
+### Regular Weekdays (Mon-Fri, not PH)
+- **All employees:** OT 1.5, Call Out 1.5, Travel Overtime (as clocked)
+- **No minimums or rounding**
 
-### Step 2: Upload to App
-1. Log into the RDS Timesheet System
-2. Click "Browse files" under "Upload HTML Timesheet File"
-3. Select the HTML file you just saved
-4. The app will automatically parse the data
+### Regular Saturdays (not PH)
+- **All employees:** OT 1.5, Call Out 1.5, Travel Overtime (as clocked)
+- **No minimums or rounding**
 
-### Step 3: Generate Excel
-1. Review the parsed data summary
-2. Choose options (skip unknown employees if needed)
-3. Click **"Generate Excel Report"**
-4. Click **"📥 Download Excel Report"**
+### Regular Sundays (not PH)
+- **MEIBC:** OT 2.0 minimum 8h, Call Out 2.0 minimum 4h
+- **Non-MEIBC:** OT 2.0 and Call Out 2.0 → < 4h rounds to 4h
 
-## 📁 Excel Report Contents
+### Weekday Public Holidays (Mon-Fri)
+- **MEIBC:** OT 1.5/2.0 → First 8h: OT 1.3, Above 8h: OT 2.5
+- **Non-MEIBC:** OT 1.5/2.0 → First 8h: OT 1.0, Above 8h: OT 2.0
+- **Call Out 2.0:** < 4h → 4h (both MEIBC and Non-MEIBC)
 
-The generated Excel file contains two sheets:
+### Saturday Public Holidays
+- **MEIBC (Dual Credit):**
+  - 8h OT 1.0 (minimum guarantee)
+  - + Actual hours worked (≤8h) at OT 1.3
+  - + Hours above 8h at OT 2.5
+  - Example: 5h worked = 8h OT 1.0 + 5h OT 1.3 = 13h paid!
+- **Non-MEIBC:** Minimum 4h at OT 2.0
 
-### Sheet 1: Timesheet Detail
-- Complete day-by-day breakdown for each employee
-- Grey rows indicate missing entries (absent days)
-- Summary section for each employee showing totals by category
+### Sunday Public Holidays
+- **MEIBC:** Minimum 8h OT 2.0, Above 8h → OT 2.5
+- **Non-MEIBC:** Minimum 4h at OT 2.0
 
-### Sheet 2: Employee Summary
-- **Normal Working Hours:** Regular work hours
-- **Paid Leave:** Vacation, sick leave, etc.
-- **Total Regular Hours:** Normal + Paid Leave
-- **Required Hours:** Based on employee's schedule
-- **Short Time:** Hours missing (if any)
-- **OT:** Overtime hours
-- **Other Hours:** Travel time, call-out, etc.
+## 👥 Employee Management
 
-## 👤 Employee Schedules
+### MEIBC Members (21 employees)
+The following employees are MEIBC members with special overtime rules:
+- Andre Venter
+- Bradley Botha
+- Christopher Engelbrecht
+- Enid Milton
+- Gerrit Hendricks
+- Jacques Nel
+- James Visagie
+- Japie Meyer
+- Juandre Landman
+- Logan Scheepers
+- Lulu Taljaard
+- Luther Miller
+- Michael Scheepers
+- Pieter Henning
+- Riaan van der Walt
+- Rowan Adams
+- Sven van Deventer
+- Tertius Marais
+- Wesley Swart
+- Willem Cloete
+- Wynand Jacobs
 
-The system automatically calculates required hours based on each employee's schedule:
+### Modifying Employee Data
 
-### Standard Schedule (Most Employees)
-- **Monday-Thursday:** 8.75 hours each
-- **Friday:** 5.0 hours
-- **Total:** 40 hours/week
+Edit `employee_data.json` to:
+- Add/remove employees
+- Update MEIBC member status
+- Modify required hours schedules
+- Update employee areas
 
-### Special Schedules
-- **Eunice Mphoswa:** Only Mon & Thu (6h each) = 12h/week
-- **Veronica du Preez:** Only Mon-Thu (8.5h each) = 34h/week
-- **Celeste Venter:** Mon-Thu (7.5h), Fri (6h) = 36h/week
-
-## 🔧 Updating Employee Data
-
-If you need to add/modify employees:
-
-1. Edit `employee_data.json`
-2. Format for each employee:
+Example employee entry:
 ```json
-"First_Last": {
-  "first_name": "First",
-  "last_name": "Last",
-  "employee_number": "RDS00XXX",
-  "area": "Workshop",
+"John_Doe": {
+  "first_name": "John",
+  "last_name": "Doe",
+  "employee_number": "RDS00099",
+  "area": "Field",
+  "is_meibc_member": true,
   "required_hours": {
-    "Monday": 8.75,
-    "Tuesday": 8.75,
-    "Wednesday": 8.75,
-    "Thursday": 8.75,
-    "Friday": 5.0,
+    "Monday": 8.5,
+    "Tuesday": 8.5,
+    "Wednesday": 8.5,
+    "Thursday": 8.5,
+    "Friday": 6.0,
     "Saturday": 0.0,
     "Sunday": 0.0
   },
@@ -155,68 +169,120 @@ If you need to add/modify employees:
 }
 ```
 
-## 🌐 Deployment Options
+## 📁 Output Files
 
-### Option 1: Run Locally (Free)
-- Run on your computer
-- Access only from your computer
-- No internet required
+### Detail Sheet
+- Employee-level detail with original job types
+- Serves as audit trail
+- Shows all clock entries as recorded
 
-### Option 2: Streamlit Cloud (Free - Basic)
-- Limited features
-- Cannot use HTML upload (no BeautifulSoup)
-- Not recommended for this app
+### Summary Sheet
+Contains the following columns:
+- Employee Name
+- Employee #
+- Normal
+- Paid Leave
+- Unpaid Leave
+- Total Regular
+- Required Hours
+- Short Time
+- Standby Days
+- Call Out 2.0
+- Overtime 2.0
+- Overtime 1.0 *(created by PH reclassification)*
+- Overtime 1.3 *(created by PH reclassification)*
+- Overtime 1.5
+- Overtime 2.5 *(created by PH reclassification)*
+- Travel Overtime
 
-### Option 3: Streamlit Cloud (Paid - $20/month)
-- Access from anywhere
-- Supports HTML upload
-- Easy deployment
+## 🔧 Configuration
 
-### Option 4: Self-Host
-- Full control
-- Run on your own server
-- Requires technical knowledge
-
-## 🆘 Troubleshooting
-
-### "Module not found" error
-```bash
-pip install -r requirements.txt
+### Authentication
+Edit `users.json` to add/modify users:
+```json
+{
+  "username": {
+    "password": "password123",
+    "role": "admin"
+  }
+}
 ```
 
-### App won't start
-- Make sure all files are in the same folder
-- Check that Python is installed: `python --version`
-- Try: `python -m streamlit run timesheet_app.py`
+### Logo
+Replace `RDS_Logo.jpg` with your company logo (recommended size: 200x60px)
 
-### Logo not showing
-- Make sure `RDS_Logo.jpg` is in the same folder as `timesheet_app.py`
+## 📝 Important Notes
 
-### "No employees in database"
-- Make sure `employee_data.json` is in the same folder
-- Check the JSON file format is correct
+### Rounding Rules
+- **Regular weekdays/Saturdays:** NO rounding (all as clocked)
+- **Sundays:** MEIBC minimums apply (OT 2.0: 8h, Call Out 2.0: 4h)
+- **Public holidays:** Specific reclassification rules apply
 
-### Unknown employees warning
-- Employees in the HTML file but not in employee_data.json
-- You can choose to skip them or include with default schedule
+### Public Holiday Reclassification
+- **Only OT 1.5 and OT 2.0** are reclassified on public holidays
+- **Call-Outs and Travel Overtime** are NEVER reclassified (always as clocked)
+- **Detail Sheet** shows original job types (audit trail)
+- **Summary Sheet** shows reclassified rates (payroll)
 
-## 📞 Support
+### Travel Overtime
+- **NO special rules** ever
+- **NO minimums** ever
+- **NO reclassification** on public holidays
+- Always paid as clocked
 
-For issues or questions, contact your IT administrator.
+## 🐛 Troubleshooting
 
-## 🔒 Security Notes
+### Common Issues
 
-- User passwords are hashed (not stored as plain text)
-- Change default admin password immediately
-- Keep `users.json` secure
-- Don't share login credentials
+**Issue:** File upload fails
+- **Solution:** Ensure HTML file is from OpenTimeClock export
 
-## ✅ Version Information
+**Issue:** Wrong overtime amounts
+- **Solution:** Verify employee MEIBC status in employee_data.json
+- **Solution:** Check if dates are correctly marked as public holidays
 
-**Version:** 2.0
-**Last Updated:** January 2026
-**Features:**
-- User authentication system
-- HTML timesheet parsing
-- Individual employee schedules
-- User management for admins
+**Issue:** Missing columns in Summary sheet
+- **Solution:** Update to latest version (v4.6) - all overtime columns now always appear
+
+## 📜 Version History
+
+### v4.6 (Current - April 2026)
+- ✅ Fixed rounding (NO rounding on regular weekdays/Saturdays)
+- ✅ Added standby days tracking
+- ✅ Fixed Summary sheet column generation
+- ✅ Verified all public holiday formulas
+- ✅ Confirmed Enid Milton MEIBC status
+
+### v4.5
+- Public holiday overtime reclassification
+- MEIBC Sunday minimums corrected
+
+### v4.2-4.4
+- Employee database with MEIBC identification
+- Required Hours and Short Time columns
+- Public holiday selection interface
+
+### v4.0-4.1
+- Initial release with authentication
+- HTML parsing and Excel reporting
+
+## 🤝 Contributing
+
+Contributions are welcome! Please ensure:
+1. All overtime formulas are tested
+2. MEIBC compliance is maintained
+3. Documentation is updated
+
+## 📄 License
+
+Proprietary - RDS Internal Use Only
+
+## 👨‍💻 Support
+
+For issues or questions, contact the RDS IT department.
+
+---
+
+**Version:** 4.6  
+**Last Updated:** April 18, 2026  
+**Status:** ✅ Production Ready

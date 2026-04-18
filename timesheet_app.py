@@ -540,8 +540,9 @@ def calculate_required_hours(employee_key, dates, employee_data):
 def apply_ot_rounding(entries, is_meibc_member=False):
     """
     For Overtime 2.0 and Call Out 2.0:
-    - Non-MEIBC: If hours < 4 on a specific day, round UP to 4 for that day
     - MEIBC on Sunday: Overtime 2.0 minimum 8h, Call Out 2.0 minimum 4h
+    - Non-MEIBC on Sunday: If hours < 4, round UP to 4
+    - Regular weekdays and Saturdays: NO rounding (as clocked)
     """
     # Group by date and job type, track day of week
     by_date_and_type = {}
@@ -553,7 +554,7 @@ def apply_ot_rounding(entries, is_meibc_member=False):
                 by_date_and_type[key] = {'hours': 0.0, 'day': entry.get('day', '')}
             by_date_and_type[key]['hours'] += entry['hours']
     
-    # Calculate total with rounding
+    # Calculate total with rounding ONLY on Sundays
     totals_by_type = defaultdict(float)
     
     for (date, job_type), data in by_date_and_type.items():
@@ -561,22 +562,27 @@ def apply_ot_rounding(entries, is_meibc_member=False):
         day_of_week = data['day']
         is_sunday = day_of_week == 'Sunday'
         
-        # MEIBC member Sunday rules
-        if is_meibc_member and is_sunday:
-            if 'Overtime 2.0' in job_type:
-                # Minimum 8 hours
-                rounded_hours = max(8.0, hours)
-            elif 'Call Out 2.0' in job_type:
-                # Minimum 4 hours
-                rounded_hours = max(4.0, hours)
+        # Only apply rounding/minimums on SUNDAYS
+        if is_sunday:
+            if is_meibc_member:
+                # MEIBC member Sunday rules
+                if 'Overtime 2.0' in job_type:
+                    # Minimum 8 hours
+                    rounded_hours = max(8.0, hours)
+                elif 'Call Out 2.0' in job_type:
+                    # Minimum 4 hours
+                    rounded_hours = max(4.0, hours)
+                else:
+                    rounded_hours = hours
             else:
-                rounded_hours = hours
+                # Non-MEIBC Sunday: < 4h rounds to 4h
+                if hours > 0 and hours < 4:
+                    rounded_hours = 4.0  # Round up to 4
+                else:
+                    rounded_hours = hours
         else:
-            # Non-MEIBC or non-Sunday: existing rule (< 4h rounds to 4h)
-            if hours > 0 and hours < 4:
-                rounded_hours = 4.0  # Round up to 4
-            else:
-                rounded_hours = hours
+            # Regular weekdays and Saturdays: NO rounding (as clocked)
+            rounded_hours = hours
         
         totals_by_type[job_type] += rounded_hours
     
