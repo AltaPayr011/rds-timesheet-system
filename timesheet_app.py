@@ -1207,6 +1207,8 @@ def generate_report_page():
                 for j, col in enumerate(cols):
                     if i + j < len(employee_list):
                         emp_name = employee_list[i + j]
+                        # Create safe key by removing special characters
+                        safe_key = f"standby_{i}_{j}_{emp_name.replace(' ', '_').replace('-', '_')}"
                         with col:
                             days = st.number_input(
                                 emp_name,
@@ -1214,7 +1216,7 @@ def generate_report_page():
                                 max_value=31.0,
                                 value=0.0,
                                 step=0.5,
-                                key=f"standby_{emp_name}",
+                                key=safe_key,
                                 help=f"Standby days for {emp_name}"
                             )
                             if days > 0:
@@ -1222,7 +1224,15 @@ def generate_report_page():
         
         # Show summary of standby days entered
         if standby_days:
-            st.info(f"✅ Standby days entered for {len(standby_days)} employee(s): {', '.join([f'{name} ({days}d)' for name, days in sorted(standby_days.items())])}")
+            # Limit summary to prevent crashes with long lists
+            summary_items = sorted(standby_days.items())
+            if len(summary_items) <= 10:
+                summary_text = ', '.join([f'{name} ({days}d)' for name, days in summary_items])
+                st.info(f"✅ Standby days entered for {len(standby_days)} employee(s): {summary_text}")
+            else:
+                # Show first 10 and count the rest
+                summary_text = ', '.join([f'{name} ({days}d)' for name, days in summary_items[:10]])
+                st.info(f"✅ Standby days entered for {len(standby_days)} employee(s): {summary_text} ... and {len(standby_days) - 10} more")
         else:
             st.info("ℹ️ No standby days entered")
         
