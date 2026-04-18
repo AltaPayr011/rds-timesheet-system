@@ -255,6 +255,9 @@ def employee_management_page():
         
         area = st.text_input("Area/Department")
         
+        # MEIBC Member checkbox
+        is_meibc = st.checkbox("MEIBC Member", value=False, help="Check if employee is a MEIBC (Metal and Engineering Industries Bargaining Council) member")
+        
         st.markdown("**Working Hours per Day:**")
         col1, col2, col3, col4, col5 = st.columns(5)
         
@@ -283,6 +286,7 @@ def employee_management_page():
                         "last_name": last_name,
                         "employee_number": employee_number,
                         "area": area,
+                        "is_meibc_member": is_meibc,
                         "required_hours": {
                             "Monday": mon_hours,
                             "Tuesday": tue_hours,
@@ -338,6 +342,9 @@ def employee_management_page():
             
             edit_area = st.text_input("Area/Department", value=emp.get('area', ''), key="edit_area")
             
+            # MEIBC Member checkbox
+            edit_is_meibc = st.checkbox("MEIBC Member", value=emp.get('is_meibc_member', False), key="edit_meibc", help="Check if employee is a MEIBC (Metal and Engineering Industries Bargaining Council) member")
+            
             st.markdown("**Working Hours per Day:**")
             col1, col2, col3, col4, col5 = st.columns(5)
             
@@ -371,6 +378,7 @@ def employee_management_page():
                         "last_name": edit_last_name,
                         "employee_number": edit_employee_number,
                         "area": edit_area,
+                        "is_meibc_member": edit_is_meibc,
                         "required_hours": {
                             "Monday": edit_mon,
                             "Tuesday": edit_tue,
@@ -418,6 +426,7 @@ def employee_management_page():
             st.write(f"**Name:** {emp['first_name']} {emp['last_name']}")
             st.write(f"**Employee Number:** {emp['employee_number']}")
             st.write(f"**Area:** {emp.get('area', 'N/A')}")
+            st.write(f"**MEIBC Member:** {'Yes' if emp.get('is_meibc_member', False) else 'No'}")
             st.write(f"**Weekly Hours:** {sum([emp['required_hours'].get(day, 0) for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']])}")
             
             confirm_text = st.text_input("Type 'DELETE' to confirm deletion")
@@ -450,10 +459,12 @@ def employee_management_page():
         emp_list = []
         for key, emp in sorted(employee_data.items(), key=lambda x: x[1]['last_name']):
             weekly_hours = sum([emp['required_hours'].get(day, 0) for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']])
+            is_meibc = emp.get('is_meibc_member', False)
             emp_list.append({
                 "Name": f"{emp['first_name']} {emp['last_name']}",
                 "Employee #": emp['employee_number'],
                 "Area": emp.get('area', 'N/A'),
+                "MEIBC": "Yes" if is_meibc else "No",
                 "Weekly Hours": f"{weekly_hours:.2f}h"
             })
         
@@ -526,32 +537,177 @@ def calculate_required_hours(employee_key, dates, employee_data):
     return required
 
 # Apply OT/Call Out rounding rule
-def apply_ot_rounding(entries):
+def apply_ot_rounding(entries, is_meibc_member=False):
     """
     For Overtime 2.0 and Call Out 2.0:
-    If hours < 4 on a specific day, round UP to 4 for that day
+    - Non-MEIBC: If hours < 4 on a specific day, round UP to 4 for that day
+    - MEIBC on Sunday: Overtime 2.0 minimum 8h, Call Out 2.0 minimum 4h
     """
-    # Group by date and job type
-    by_date_and_type = defaultdict(float)
+    # Group by date and job type, track day of week
+    by_date_and_type = {}
     
     for entry in entries:
         if 'Overtime 2.0' in entry['job_type'] or 'Call Out 2.0' in entry['job_type']:
             key = (entry['date_str'], entry['job_type'])
-            by_date_and_type[key] += entry['hours']
+            if key not in by_date_and_type:
+                by_date_and_type[key] = {'hours': 0.0, 'day': entry.get('day', '')}
+            by_date_and_type[key]['hours'] += entry['hours']
     
     # Calculate total with rounding
     totals_by_type = defaultdict(float)
     
-    for (date, job_type), hours in by_date_and_type.items():
-        if hours > 0 and hours < 4:
-            totals_by_type[job_type] += 4.0  # Round up to 4
+    for (date, job_type), data in by_date_and_type.items():
+        hours = data['hours']
+        day_of_week = data['day']
+        is_sunday = day_of_week == 'Sunday'
+        
+        # MEIBC member Sunday rules
+        if is_meibc_member and is_sunday:
+            if 'Overtime 2.0' in job_type:
+                # Minimum 8 hours
+                rounded_hours = max(8.0, hours)
+            elif 'Call Out 2.0' in job_type:
+                # Minimum 4 hours
+                rounded_hours = max(4.0, hours)
+            else:
+                rounded_hours = hours
         else:
-            totals_by_type[job_type] += hours
+            # Non-MEIBC or non-Sunday: existing rule (< 4h rounds to 4h)
+            if hours > 0 and hours < 4:
+                rounded_hours = 4.0  # Round up to 4
+            else:
+                rounded_hours = hours
+        
+        totals_by_type[job_type] += rounded_hours
     
     return totals_by_type
 
+def reclassify_public_holiday_overtime(entries, public_holidays, is_meibc_member=False):
+    """
+    Reclassify overtime work on public holidays:
+    
+    WEEKDAY Public Holidays (Mon-Fri):
+    - MEIBC: OT 1.5/2.0 → First 8h → OT 1.3, Hours >8 → OT 2.5
+    - Non-MEIBC: OT 1.5/2.0 → First 8h → OT 1.0, Hours >8 → OT 2.0
+    
+    SATURDAY Public Holidays:
+    - MEIBC: OT 1.5/2.0 → Minimum 8h OT 1.0 + Actual hours (up to 8h) OT 1.3 + Hours >8 → OT 2.5
+    - Non-MEIBC: OT 1.5/2.0 → Minimum 4h OT 2.0
+    
+    SUNDAY Public Holidays:
+    - MEIBC: OT 1.5/2.0 → Minimum 8h OT 2.0 + Hours >8 → OT 2.5
+    - Non-MEIBC: OT 1.5/2.0 → Minimum 4h OT 2.0
+    
+    Returns: Modified job totals dict with reclassified hours
+    """
+    if not public_holidays:
+        return {}
+    
+    # Convert public holidays to set of date strings for fast lookup
+    holiday_dates = {holiday.strftime('%Y/%m/%d') for holiday in public_holidays}
+    
+    # Day categories
+    weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+    
+    # Group entries by date and job type
+    by_date_and_type = defaultdict(lambda: {'hours': 0.0, 'day': ''})
+    
+    for entry in entries:
+        date_str = entry['date_str']
+        job_type = entry['job_type']
+        day = entry.get('day', '')
+        
+        # Only process OT 1.5 and 2.0 on public holidays (weekday, Saturday, or Sunday)
+        if date_str in holiday_dates:
+            if (day in weekdays or day == 'Saturday' or day == 'Sunday') and ('Overtime 1.5' in job_type or 'Overtime 2.0' in job_type):
+                key = (date_str, job_type)
+                by_date_and_type[key]['hours'] += entry['hours']
+                by_date_and_type[key]['day'] = day
+    
+    # Reclassify and split hours
+    reclassified_totals = defaultdict(float)
+    
+    for (date, original_job_type), data in by_date_and_type.items():
+        total_hours = data['hours']
+        day = data['day']
+        
+        if total_hours <= 0:
+            continue
+        
+        # WEEKDAY PUBLIC HOLIDAYS (Mon-Fri)
+        if day in weekdays:
+            # Split into first 8 hours and remainder
+            first_8_hours = min(8.0, total_hours)
+            hours_above_8 = max(0.0, total_hours - 8.0)
+            
+            if is_meibc_member:
+                # MEIBC: First 8h → OT 1.3, Above 8h → OT 2.5
+                if first_8_hours > 0:
+                    reclassified_totals['Overtime 1.3'] += first_8_hours
+                if hours_above_8 > 0:
+                    reclassified_totals['Overtime 2.5'] += hours_above_8
+            else:
+                # Non-MEIBC: First 8h → OT 1.0, Above 8h → OT 2.0
+                if first_8_hours > 0:
+                    reclassified_totals['Overtime 1.0'] += first_8_hours
+                if hours_above_8 > 0:
+                    reclassified_totals['Overtime 2.0'] += hours_above_8
+        
+        # SATURDAY PUBLIC HOLIDAYS
+        elif day == 'Saturday':
+            if is_meibc_member:
+                # MEIBC: Minimum 8h OT 1.0 + Actual hours (up to 8h) OT 1.3 + Hours >8 → OT 2.5
+                # Minimum guarantee
+                reclassified_totals['Overtime 1.0'] += 8.0
+                
+                # Actual hours worked (up to 8h) at OT 1.3
+                actual_up_to_8 = min(8.0, total_hours)
+                reclassified_totals['Overtime 1.3'] += actual_up_to_8
+                
+                # Hours above 8 at OT 2.5
+                hours_above_8 = max(0.0, total_hours - 8.0)
+                if hours_above_8 > 0:
+                    reclassified_totals['Overtime 2.5'] += hours_above_8
+            else:
+                # Non-MEIBC: Minimum 4h OT 2.0
+                minimum_4h = max(4.0, total_hours)
+                reclassified_totals['Overtime 2.0'] += minimum_4h
+        
+        # SUNDAY PUBLIC HOLIDAYS
+        elif day == 'Sunday':
+            if is_meibc_member:
+                # MEIBC: Minimum 8h OT 2.0 + Hours >8 → OT 2.5
+                first_8_hours = min(8.0, total_hours)
+                minimum_8h = max(8.0, first_8_hours)  # Ensure minimum 8h
+                reclassified_totals['Overtime 2.0'] += minimum_8h
+                
+                # Hours above 8 at OT 2.5
+                hours_above_8 = max(0.0, total_hours - 8.0)
+                if hours_above_8 > 0:
+                    reclassified_totals['Overtime 2.5'] += hours_above_8
+            else:
+                # Non-MEIBC: Minimum 4h OT 2.0
+                minimum_4h = max(4.0, total_hours)
+                reclassified_totals['Overtime 2.0'] += minimum_4h
+    
+    return reclassified_totals
+
 # Generate Excel report
-def generate_excel_report(timesheet_data, employee_data, skip_unknown):
+def generate_excel_report(timesheet_data, employee_data, skip_unknown, public_holidays=None, standby_days=None):
+    """
+    Generate Excel report from timesheet data
+    
+    Args:
+        timesheet_data: Parsed timesheet data
+        employee_data: Employee database
+        skip_unknown: Whether to skip employees not in database
+        public_holidays: List of date objects representing public holidays
+        standby_days: Dict mapping employee names to standby days count
+    """
+    if public_holidays is None:
+        public_holidays = []
+    if standby_days is None:
+        standby_days = {}
     wb = Workbook()
     detail_sheet = wb.active
     detail_sheet.title = "Timesheet Detail"
@@ -745,7 +901,7 @@ def generate_excel_report(timesheet_data, employee_data, skip_unknown):
     
     # Build headers
     summary_headers = ["Employee Name", "Employee #", "Normal Working Hours", "Paid Leave", "Unpaid Leave", 
-                       "Total Regular Hours", "Required Hours", "Short Time"]
+                       "Total Regular Hours", "Required Hours", "Short Time", "Standby Days"]
     
     # Add special OT columns first
     for ot_col in sorted(ot_special):
@@ -784,10 +940,12 @@ def generate_excel_report(timesheet_data, employee_data, skip_unknown):
         if skip_unknown and not emp_key:
             continue
         
-        # Get employee number
+        # Get employee number and MEIBC status
         emp_number = ""
+        is_meibc_member = False
         if emp_key and emp_key in employee_data:
             emp_number = employee_data[emp_key].get('employee_number', '')
+            is_meibc_member = employee_data[emp_key].get('is_meibc_member', False)
         
         entries = timesheet_data[emp_name]
         
@@ -796,8 +954,34 @@ def generate_excel_report(timesheet_data, employee_data, skip_unknown):
         for entry in entries:
             job_totals[entry['job_type']] += entry['hours']
         
-        # Apply rounding for Overtime 2.0 and Call Out 2.0
-        rounded_totals = apply_ot_rounding(entries)
+        # Apply public holiday overtime reclassification
+        holiday_reclassified = reclassify_public_holiday_overtime(entries, public_holidays, is_meibc_member)
+        
+        # Remove original OT 1.5 and 2.0 hours that occurred on public holidays (weekday, Saturday, or Sunday)
+        # and add the reclassified hours
+        if holiday_reclassified:
+            # First, we need to subtract the original hours that will be reclassified
+            for entry in entries:
+                date_str = entry['date_str']
+                job_type = entry['job_type']
+                day = entry.get('day', '')
+                
+                # Check if this is a public holiday (any day)
+                if public_holidays:
+                    holiday_dates = {h.strftime('%Y/%m/%d') for h in public_holidays}
+                    weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+                    
+                    if date_str in holiday_dates and (day in weekdays or day == 'Saturday' or day == 'Sunday'):
+                        if 'Overtime 1.5' in job_type or 'Overtime 2.0' in job_type:
+                            # Subtract these hours from the original job type
+                            job_totals[job_type] -= entry['hours']
+            
+            # Add the reclassified hours
+            for job_type, hours in holiday_reclassified.items():
+                job_totals[job_type] += hours
+        
+        # Apply rounding for Overtime 2.0 and Call Out 2.0 (with MEIBC Sunday rules)
+        rounded_totals = apply_ot_rounding(entries, is_meibc_member)
         
         # Update job_totals with rounded values
         for job_type, rounded_value in rounded_totals.items():
@@ -832,6 +1016,11 @@ def generate_excel_report(timesheet_data, employee_data, skip_unknown):
         summary_sheet.cell(summary_row, col_idx, round(required_hours, 2))
         col_idx += 1
         summary_sheet.cell(summary_row, col_idx, round(short_time, 2) if short_time > 0 else "")
+        col_idx += 1
+        
+        # Standby Days
+        standby = standby_days.get(emp_name, 0)
+        summary_sheet.cell(summary_row, col_idx, round(standby, 2) if standby > 0 else "")
         col_idx += 1
         
         # Write special OT columns (with rounding)
@@ -938,6 +1127,36 @@ def generate_report_page():
         end_date = max(all_dates)
         st.write(f"**Date Range:** {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
         
+        # Public Holiday Selection
+        st.subheader("1. Select Public Holidays")
+        st.write("Select which days in this period were public holidays:")
+        
+        # Generate list of all dates in range
+        date_list = []
+        current_date = start_date
+        while current_date <= end_date:
+            date_list.append(current_date)
+            current_date += timedelta(days=1)
+        
+        # Create formatted date options for display
+        date_options = {date.strftime('%Y-%m-%d (%A)'): date for date in date_list}
+        
+        # Multi-select for public holidays
+        selected_holidays = st.multiselect(
+            "Public Holidays in this period:",
+            options=list(date_options.keys()),
+            default=[],
+            help="Select all public holidays during this timesheet period. These will be used for special calculations."
+        )
+        
+        # Convert selected strings back to date objects
+        public_holidays = [date_options[holiday_str] for holiday_str in selected_holidays]
+        
+        if public_holidays:
+            st.info(f"✅ {len(public_holidays)} public holiday(s) selected: {', '.join([d.strftime('%Y-%m-%d') for d in public_holidays])}")
+        else:
+            st.info("ℹ️ No public holidays selected for this period")
+        
         unknown_employees = []
         for emp_name in timesheet_data.keys():
             if not find_employee_key(emp_name, employee_data):
@@ -955,11 +1174,51 @@ def generate_report_page():
             
             skip_unknown = st.checkbox("Skip employees not in database", value=False)
         
-        st.subheader("3. Generate Report")
+        st.subheader("3. Standby Days")
+        st.write("Enter standby days for employees (optional):")
+        
+        # Get list of all employees from timesheet
+        employee_list = sorted(timesheet_data.keys())
+        
+        # Create a dictionary to store standby days
+        standby_days = {}
+        
+        # Show expandable section for standby days input
+        with st.expander("📋 Click to enter standby days for employees", expanded=False):
+            st.write("Enter the number of standby days for each employee who had standby shifts.")
+            st.write("Leave blank (or 0) for employees with no standby days.")
+            
+            # Create columns for better layout
+            cols_per_row = 3
+            for i in range(0, len(employee_list), cols_per_row):
+                cols = st.columns(cols_per_row)
+                for j, col in enumerate(cols):
+                    if i + j < len(employee_list):
+                        emp_name = employee_list[i + j]
+                        with col:
+                            days = st.number_input(
+                                emp_name,
+                                min_value=0.0,
+                                max_value=31.0,
+                                value=0.0,
+                                step=0.5,
+                                key=f"standby_{emp_name}",
+                                help=f"Standby days for {emp_name}"
+                            )
+                            if days > 0:
+                                standby_days[emp_name] = days
+        
+        # Show summary of standby days entered
+        if standby_days:
+            st.info(f"✅ Standby days entered for {len(standby_days)} employee(s): {', '.join([f'{name} ({days}d)' for name, days in sorted(standby_days.items())])}")
+        else:
+            st.info("ℹ️ No standby days entered")
+        
+        st.subheader("4. Generate Report")
         
         if st.button("Generate Excel Report", type="primary"):
             with st.spinner("Generating report..."):
-                wb = generate_excel_report(timesheet_data, employee_data, skip_unknown)
+                wb = generate_excel_report(timesheet_data, employee_data, skip_unknown, public_holidays, standby_days)
                 
                 from io import BytesIO
                 buffer = BytesIO()

@@ -1,25 +1,10 @@
 {
-  "Abdul_Isaacs": {
-    "first_name": "Abdul",
-    "last_name": "Isaacs",
-    "employee_number": "RDS00045",
-    "area": "Workshop",
-    "required_hours": {
-      "Monday": 8.75,
-      "Tuesday": 8.75,
-      "Wednesday": 8.75,
-      "Thursday": 8.75,
-      "Friday": 5.0,
-      "Saturday": 0.0,
-      "Sunday": 0.0
-    },
-    "notes": ""
-  },
-  "Awie_Janse_Van_Vuuren": {
-    "first_name": "Awie",
-    "last_name": "Janse Van Vuuren",
-    "employee_number": "RDS00044",
-    "area": "Gauteng",
+  "Neels_de Waal": {
+    "first_name": "Neels",
+    "last_name": "de Waal",
+    "employee_number": "RDS00005",
+    "area": "Office",
+    "is_meibc_member": false,
     "required_hours": {
       "Monday": 8.5,
       "Tuesday": 8.5,
@@ -29,45 +14,14 @@
       "Saturday": 0.0,
       "Sunday": 0.0
     },
-    "notes": ""
+    "notes": "Did he give up his Friday lunch break?"
   },
-  "Alex_Hart": {
-    "first_name": "Alex",
-    "last_name": "Hart",
-    "employee_number": "RDS00032",
-    "area": "CT Technicians",
-    "required_hours": {
-      "Monday": 8.5,
-      "Tuesday": 8.5,
-      "Wednesday": 8.5,
-      "Thursday": 8.5,
-      "Friday": 6.0,
-      "Saturday": 0.0,
-      "Sunday": 0.0
-    },
-    "notes": ""
-  },
-  "Regardt_du_Toit": {
-    "first_name": "Regardt",
-    "last_name": "du Toit",
-    "employee_number": "RDS00039",
-    "area": "CT Technicians",
-    "required_hours": {
-      "Monday": 8.5,
-      "Tuesday": 8.5,
-      "Wednesday": 8.5,
-      "Thursday": 8.5,
-      "Friday": 6.0,
-      "Saturday": 0.0,
-      "Sunday": 0.0
-    },
-    "notes": ""
-  },
-  "Caiphus_Moraka": {
-    "first_name": "Caiphus",
-    "last_name": "Moraka",
-    "employee_number": "RDS00013",
-    "area": "Gauteng",
+  "Desmond_Lewis": {
+    "first_name": "Desmond",
+    "last_name": "Lewis",
+    "employee_number": "RDS00006",
+    "area": "Office",
+    "is_meibc_member": false,
     "required_hours": {
       "Monday": 8.5,
       "Tuesday": 8.5,
@@ -84,6 +38,7 @@
     "last_name": "Venter",
     "employee_number": "RDS00008",
     "area": "Office",
+    "is_meibc_member": false,
     "required_hours": {
       "Monday": 7.5,
       "Tuesday": 7.5,
@@ -95,91 +50,12 @@
     },
     "notes": "Did she give up her lunch breaks every day in order to leave earlier? Arrangement between her and Patrick. Not sure."
   },
-  "Desmond_Lewis": {
-    "first_name": "Desmond",
-    "last_name": "Lewis",
-    "employee_number": "RDS00006",
-    "area": "Office",
-    "required_hours": {
-      "Monday": 8.5,
-      "Tuesday": 8.5,
-      "Wednesday": 8.5,
-      "Thursday": 8.5,
-      "Friday": 6.0,
-      "Saturday": 0.0,
-      "Sunday": 0.0
-    },
-    "notes": ""
-  },
-  "Patricia_Modise": {
-    "first_name": "Patricia",
-    "last_name": "Modise",
-    "employee_number": "RDS00040",
-    "area": "Office",
-    "required_hours": {
-      "Monday": 8.5,
-      "Tuesday": 8.5,
-      "Wednesday": 8.5,
-      "Thursday": 8.5,
-      "Friday": 6.0,
-      "Saturday": 0.0,
-      "Sunday": 0.0
-    },
-    "notes": "Did she give up her Friday lunch break?"
-  },
-  "Elvis_Mzukwa": {
-    "first_name": "Elvis",
-    "last_name": "Mzukwa",
-    "employee_number": "RDS00004",
-    "area": "Workshop",
-    "required_hours": {
-      "Monday": 8.75,
-      "Tuesday": 8.75,
-      "Wednesday": 8.75,
-      "Thursday": 8.75,
-      "Friday": 5.0,
-      "Saturday": 0.0,
-      "Sunday": 0.0
-    },
-    "notes": ""
-  },
-  "Enid_Milton": {
-    "first_name": "Enid",
-    "last_name": "Milton",
-    "employee_number": "RDS00036",
-    "area": "Office",
-    "required_hours": {
-      "Monday": 8.5,
-      "Tuesday": 8.5,
-      "Wednesday": 8.5,
-      "Thursday": 8.5,
-      "Friday": 6.0,
-      "Saturday": 0.0,
-      "Sunday": 0.0
-    },
-    "notes": "Not sure why they leave Fridays at 14:30? Should be 14:00?"
-  },
-  "Eunice_Mphoswa": {
-    "first_name": "Eunice",
-    "last_name": "Mphoswa",
-    "employee_number": "RDS00029",
-    "area": "Office",
-    "required_hours": {
-      "Monday": 6.0,
-      "Tuesday": 0.0,
-      "Wednesday": 0.0,
-      "Thursday": 6.0,
-      "Friday": 0.0,
-      "Saturday": 0.0,
-      "Sunday": 0.0
-    },
-    "notes": "Only works on Mondays and Thursdays"
-  },
   "Gareth_Jacobs": {
     "first_name": "Gareth",
     "last_name": "Jacobs",
     "employee_number": "RDS00010",
     "area": "CT Technicians",
+    "is_meibc_member": true,
     "required_hours": {
       "Monday": 8.5,
       "Tuesday": 8.5,
@@ -191,27 +67,12 @@
     },
     "notes": ""
   },
-  "Richie_Zakaza": {
-    "first_name": "Richie",
-    "last_name": "Zakaza",
-    "employee_number": "RDS00027",
-    "area": "Workshop",
-    "required_hours": {
-      "Monday": 8.75,
-      "Tuesday": 8.75,
-      "Wednesday": 8.75,
-      "Thursday": 8.75,
-      "Friday": 5.0,
-      "Saturday": 0.0,
-      "Sunday": 0.0
-    },
-    "notes": ""
-  },
-  "Herman_de_Waal": {
+  "Herman_de Waal": {
     "first_name": "Herman",
     "last_name": "de Waal",
     "employee_number": "RDS00011",
     "area": "Office",
+    "is_meibc_member": false,
     "required_hours": {
       "Monday": 8.25,
       "Tuesday": 8.25,
@@ -223,43 +84,12 @@
     },
     "notes": "Is this correct? I think there was a change"
   },
-  "Hlalanathi_Zimase": {
-    "first_name": "Hlalanathi",
-    "last_name": "Zimase",
-    "employee_number": "RDS00037",
-    "area": "Workshop",
-    "required_hours": {
-      "Monday": 8.75,
-      "Tuesday": 8.75,
-      "Wednesday": 8.75,
-      "Thursday": 8.75,
-      "Friday": 5.0,
-      "Saturday": 0.0,
-      "Sunday": 0.0
-    },
-    "notes": ""
-  },
-  "Igshaan_Brown": {
-    "first_name": "Igshaan",
-    "last_name": "Brown",
-    "employee_number": "RDS00019",
-    "area": "Workshop",
-    "required_hours": {
-      "Monday": 8.75,
-      "Tuesday": 8.75,
-      "Wednesday": 8.75,
-      "Thursday": 8.75,
-      "Friday": 5.0,
-      "Saturday": 0.0,
-      "Sunday": 0.0
-    },
-    "notes": ""
-  },
-  "Neels_de_Waal": {
-    "first_name": "Neels",
-    "last_name": "de Waal",
-    "employee_number": "RDS00005",
-    "area": "Office",
+  "Caiphus_Moraka": {
+    "first_name": "Caiphus",
+    "last_name": "Moraka",
+    "employee_number": "RDS00013",
+    "area": "Gauteng",
+    "is_meibc_member": true,
     "required_hours": {
       "Monday": 8.5,
       "Tuesday": 8.5,
@@ -269,29 +99,31 @@
       "Saturday": 0.0,
       "Sunday": 0.0
     },
-    "notes": "Did he give up his Friday lunch break?"
+    "notes": ""
   },
-  "Kurt_Leibrandt": {
-    "first_name": "Kurt",
-    "last_name": "Leibrandt",
-    "employee_number": "RDS00025",
-    "area": "Workshop",
+  "Veronica_du Preez": {
+    "first_name": "Veronica",
+    "last_name": "du Preez",
+    "employee_number": "RDS00014",
+    "area": "Office",
+    "is_meibc_member": false,
     "required_hours": {
-      "Monday": 8.75,
-      "Tuesday": 8.75,
-      "Wednesday": 8.75,
-      "Thursday": 8.75,
-      "Friday": 5.0,
+      "Monday": 8.5,
+      "Tuesday": 8.5,
+      "Wednesday": 8.5,
+      "Thursday": 8.5,
+      "Friday": 0.0,
       "Saturday": 0.0,
       "Sunday": 0.0
     },
-    "notes": ""
+    "notes": "Only works from Monday to Thursday"
   },
-  "Liam_Consul": {
-    "first_name": "Liam",
-    "last_name": "Consul",
-    "employee_number": "RDS00042",
+  "Theodore_Jacobs": {
+    "first_name": "Theodore",
+    "last_name": "Jacobs",
+    "employee_number": "RDS00016",
     "area": "CT Technicians",
+    "is_meibc_member": true,
     "required_hours": {
       "Monday": 8.5,
       "Tuesday": 8.5,
@@ -302,92 +134,13 @@
       "Sunday": 0.0
     },
     "notes": ""
-  },
-  "Liam_Jones": {
-    "first_name": "Liam",
-    "last_name": "Jones",
-    "employee_number": "RDS00046",
-    "area": "Workshop",
-    "required_hours": {
-      "Monday": 8.5,
-      "Tuesday": 8.5,
-      "Wednesday": 8.5,
-      "Thursday": 8.5,
-      "Friday": 6.0,
-      "Saturday": 0.0,
-      "Sunday": 0.0
-    },
-    "notes": ""
-  },
-  "Loyiso_Jara": {
-    "first_name": "Loyiso",
-    "last_name": "Jara",
-    "employee_number": "RDS00026",
-    "area": "Workshop",
-    "required_hours": {
-      "Monday": 8.75,
-      "Tuesday": 8.75,
-      "Wednesday": 8.75,
-      "Thursday": 8.75,
-      "Friday": 5.0,
-      "Saturday": 0.0,
-      "Sunday": 0.0
-    },
-    "notes": ""
-  },
-  "Michael_Bekker": {
-    "first_name": "Michael",
-    "last_name": "Bekker",
-    "employee_number": "RDS00033",
-    "area": "Office",
-    "required_hours": {
-      "Monday": 8.5,
-      "Tuesday": 8.5,
-      "Wednesday": 8.5,
-      "Thursday": 8.5,
-      "Friday": 6.0,
-      "Saturday": 0.0,
-      "Sunday": 0.0
-    },
-    "notes": "Not sure why they leave Fridays at 14:30? Should be 14:00?"
   },
   "Milburn_Volkwyn": {
     "first_name": "Milburn",
     "last_name": "Volkwyn",
     "employee_number": "RDS00017",
     "area": "CT Technicians",
-    "required_hours": {
-      "Monday": 8.5,
-      "Tuesday": 8.5,
-      "Wednesday": 8.5,
-      "Thursday": 8.5,
-      "Friday": 6.0,
-      "Saturday": 0.0,
-      "Sunday": 0.0
-    },
-    "notes": ""
-  },
-  "Nolan_Patterson": {
-    "first_name": "Nolan",
-    "last_name": "Patterson",
-    "employee_number": "RDS00020",
-    "area": "Workshop",
-    "required_hours": {
-      "Monday": 8.75,
-      "Tuesday": 8.75,
-      "Wednesday": 8.75,
-      "Thursday": 8.75,
-      "Friday": 5.0,
-      "Saturday": 0.0,
-      "Sunday": 0.0
-    },
-    "notes": ""
-  },
-  "Philip_Janse_van_Vuuren": {
-    "first_name": "Philip",
-    "last_name": "Janse van Vuuren",
-    "employee_number": "RDS00038",
-    "area": "Gauteng",
+    "is_meibc_member": true,
     "required_hours": {
       "Monday": 8.5,
       "Tuesday": 8.5,
@@ -404,6 +157,7 @@
     "last_name": "Rostron",
     "employee_number": "RDS00018",
     "area": "Office",
+    "is_meibc_member": false,
     "required_hours": {
       "Monday": 8.5,
       "Tuesday": 8.5,
@@ -415,11 +169,12 @@
     },
     "notes": "Not sure why they leave Fridays at 14:30? Should be 14:00?"
   },
-  "Regan_West": {
-    "first_name": "Regan",
-    "last_name": "West",
-    "employee_number": "RDS00023",
+  "Igshaan_Brown": {
+    "first_name": "Igshaan",
+    "last_name": "Brown",
+    "employee_number": "RDS00019",
     "area": "Workshop",
+    "is_meibc_member": true,
     "required_hours": {
       "Monday": 8.75,
       "Tuesday": 8.75,
@@ -431,11 +186,80 @@
     },
     "notes": ""
   },
-  "Rudi_Janse_van_Vuuren": {
+  "Nolan_Patterson": {
+    "first_name": "Nolan",
+    "last_name": "Patterson",
+    "employee_number": "RDS00020",
+    "area": "Workshop",
+    "is_meibc_member": true,
+    "required_hours": {
+      "Monday": 8.75,
+      "Tuesday": 8.75,
+      "Wednesday": 8.75,
+      "Thursday": 8.75,
+      "Friday": 5.0,
+      "Saturday": 0.0,
+      "Sunday": 0.0
+    },
+    "notes": ""
+  },
+  "Regan_West": {
+    "first_name": "Regan",
+    "last_name": "West",
+    "employee_number": "RDS00023",
+    "area": "Workshop",
+    "is_meibc_member": false,
+    "required_hours": {
+      "Monday": 8.75,
+      "Tuesday": 8.75,
+      "Wednesday": 8.75,
+      "Thursday": 8.75,
+      "Friday": 5.0,
+      "Saturday": 0.0,
+      "Sunday": 0.0
+    },
+    "notes": ""
+  },
+  "Kurt_Leibrandt": {
+    "first_name": "Kurt",
+    "last_name": "Leibrandt",
+    "employee_number": "RDS00025",
+    "area": "Workshop",
+    "is_meibc_member": true,
+    "required_hours": {
+      "Monday": 8.75,
+      "Tuesday": 8.75,
+      "Wednesday": 8.75,
+      "Thursday": 8.75,
+      "Friday": 5.0,
+      "Saturday": 0.0,
+      "Sunday": 0.0
+    },
+    "notes": ""
+  },
+  "Loyiso_Jara": {
+    "first_name": "Loyiso",
+    "last_name": "Jara",
+    "employee_number": "RDS00026",
+    "area": "Workshop",
+    "is_meibc_member": true,
+    "required_hours": {
+      "Monday": 8.75,
+      "Tuesday": 8.75,
+      "Wednesday": 8.75,
+      "Thursday": 8.75,
+      "Friday": 5.0,
+      "Saturday": 0.0,
+      "Sunday": 0.0
+    },
+    "notes": ""
+  },
+  "Rudi_Janse van Vuuren": {
     "first_name": "Rudi",
     "last_name": "Janse van Vuuren",
     "employee_number": "RDS00028",
     "area": "Gauteng",
+    "is_meibc_member": false,
     "required_hours": {
       "Monday": 8.5,
       "Tuesday": 8.5,
@@ -447,11 +271,29 @@
     },
     "notes": ""
   },
-  "Lucky_Masilela": {
-    "first_name": "Lucky",
-    "last_name": "Masilela",
-    "employee_number": "RDS00041",
-    "area": "Gauteng",
+  "Eunice_Mphoswa": {
+    "first_name": "Eunice",
+    "last_name": "Mphoswa",
+    "employee_number": "RDS00029",
+    "area": "Office",
+    "is_meibc_member": false,
+    "required_hours": {
+      "Monday": 6.0,
+      "Tuesday": 0.0,
+      "Wednesday": 0.0,
+      "Thursday": 6.0,
+      "Friday": 0.0,
+      "Saturday": 0.0,
+      "Sunday": 0.0
+    },
+    "notes": "Only works on Mondays and Thursdays"
+  },
+  "Michael_Bekker": {
+    "first_name": "Michael",
+    "last_name": "Bekker",
+    "employee_number": "RDS00033",
+    "area": "Office",
+    "is_meibc_member": false,
     "required_hours": {
       "Monday": 8.5,
       "Tuesday": 8.5,
@@ -461,19 +303,88 @@
       "Saturday": 0.0,
       "Sunday": 0.0
     },
+    "notes": "Not sure why they leave Fridays at 14:30? Should be 14:00?"
+  },
+  "Enid_Milton": {
+    "first_name": "Enid",
+    "last_name": "Milton",
+    "employee_number": "RDS00036",
+    "area": "Office",
+    "is_meibc_member": true,
+    "required_hours": {
+      "Monday": 8.5,
+      "Tuesday": 8.5,
+      "Wednesday": 8.5,
+      "Thursday": 8.5,
+      "Friday": 6.0,
+      "Saturday": 0.0,
+      "Sunday": 0.0
+    },
+    "notes": "Not sure why they leave Fridays at 14:30? Should be 14:00?"
+  },
+  "Hlalanathi_Zimase": {
+    "first_name": "Hlalanathi",
+    "last_name": "Zimase",
+    "employee_number": "RDS00037",
+    "area": "Workshop",
+    "is_meibc_member": true,
+    "required_hours": {
+      "Monday": 8.75,
+      "Tuesday": 8.75,
+      "Wednesday": 8.75,
+      "Thursday": 8.75,
+      "Friday": 5.0,
+      "Saturday": 0.0,
+      "Sunday": 0.0
+    },
     "notes": ""
   },
-  "Theodore_Jacobs": {
-    "first_name": "Theodore",
-    "last_name": "Jacobs",
-    "employee_number": "RDS00016",
+  "Liam_Consul": {
+    "first_name": "Liam",
+    "last_name": "Consul",
+    "employee_number": "RDS00042",
     "area": "CT Technicians",
+    "is_meibc_member": true,
     "required_hours": {
       "Monday": 8.5,
       "Tuesday": 8.5,
       "Wednesday": 8.5,
       "Thursday": 8.5,
       "Friday": 6.0,
+      "Saturday": 0.0,
+      "Sunday": 0.0
+    },
+    "notes": ""
+  },
+  "Liam_Jones": {
+    "first_name": "Liam",
+    "last_name": "Jones",
+    "employee_number": "RDS00046",
+    "area": "Workshop",
+    "is_meibc_member": true,
+    "required_hours": {
+      "Monday": 8.5,
+      "Tuesday": 8.5,
+      "Wednesday": 8.5,
+      "Thursday": 8.5,
+      "Friday": 6.0,
+      "Saturday": 0.0,
+      "Sunday": 0.0
+    },
+    "notes": ""
+  },
+  "Elvis_Mzukwa": {
+    "first_name": "Elvis",
+    "last_name": "Mzukwa",
+    "employee_number": "RDS00004",
+    "area": "Workshop",
+    "is_meibc_member": true,
+    "required_hours": {
+      "Monday": 8.75,
+      "Tuesday": 8.75,
+      "Wednesday": 8.75,
+      "Thursday": 8.75,
+      "Friday": 5.0,
       "Saturday": 0.0,
       "Sunday": 0.0
     },
@@ -484,6 +395,7 @@
     "last_name": "Hendricks",
     "employee_number": "RDS00015",
     "area": "Workshop",
+    "is_meibc_member": true,
     "required_hours": {
       "Monday": 8.75,
       "Tuesday": 8.75,
@@ -495,27 +407,29 @@
     },
     "notes": ""
   },
-  "Veronica_du_Preez": {
-    "first_name": "Veronica",
-    "last_name": "du Preez",
-    "employee_number": "RDS00014",
-    "area": "Office",
+  "Richie_Zakaza": {
+    "first_name": "Richie",
+    "last_name": "Zakaza",
+    "employee_number": "RDS00027",
+    "area": "Workshop",
+    "is_meibc_member": true,
     "required_hours": {
-      "Monday": 8.5,
-      "Tuesday": 8.5,
-      "Wednesday": 8.5,
-      "Thursday": 8.5,
-      "Friday": 0.0,
+      "Monday": 8.75,
+      "Tuesday": 8.75,
+      "Wednesday": 8.75,
+      "Thursday": 8.75,
+      "Friday": 5.0,
       "Saturday": 0.0,
       "Sunday": 0.0
     },
-    "notes": "Only works from Monday to Thursday"
+    "notes": ""
   },
   "Wiseman_Banzi": {
     "first_name": "Wiseman",
     "last_name": "Banzi",
     "employee_number": "RDS00031",
     "area": "Workshop",
+    "is_meibc_member": true,
     "required_hours": {
       "Monday": 8.75,
       "Tuesday": 8.75,
@@ -527,11 +441,12 @@
     },
     "notes": ""
   },
-  "Awie_Janse_van_Vuuren": {
-    "first_name": "Awie",
-    "last_name": "Janse van Vuuren",
-    "employee_number": "RDS00044",
-    "area": "Gauteng",
+  "Alex_Hart": {
+    "first_name": "Alex",
+    "last_name": "Hart",
+    "employee_number": "RDS00032",
+    "area": "CT Technicians",
+    "is_meibc_member": true,
     "required_hours": {
       "Monday": 8.5,
       "Tuesday": 8.5,
@@ -543,17 +458,103 @@
     },
     "notes": ""
   },
-  "Philip_Jansen_van_Vuuren": {
+  "Philip_Janse van Vuuren": {
     "first_name": "Philip",
-    "last_name": "Jansen van Vuuren",
+    "last_name": "Janse van Vuuren",
     "employee_number": "RDS00038",
     "area": "Gauteng",
+    "is_meibc_member": true,
     "required_hours": {
       "Monday": 8.5,
       "Tuesday": 8.5,
       "Wednesday": 8.5,
       "Thursday": 8.5,
       "Friday": 6.0,
+      "Saturday": 0.0,
+      "Sunday": 0.0
+    },
+    "notes": ""
+  },
+  "Regardt_du Toit": {
+    "first_name": "Regardt",
+    "last_name": "du Toit",
+    "employee_number": "RDS00039",
+    "area": "CT Technicians",
+    "is_meibc_member": true,
+    "required_hours": {
+      "Monday": 8.5,
+      "Tuesday": 8.5,
+      "Wednesday": 8.5,
+      "Thursday": 8.5,
+      "Friday": 6.0,
+      "Saturday": 0.0,
+      "Sunday": 0.0
+    },
+    "notes": ""
+  },
+  "Patricia_Modise": {
+    "first_name": "Patricia",
+    "last_name": "Modise",
+    "employee_number": "RDS00040",
+    "area": "Office",
+    "is_meibc_member": false,
+    "required_hours": {
+      "Monday": 8.5,
+      "Tuesday": 8.5,
+      "Wednesday": 8.5,
+      "Thursday": 8.5,
+      "Friday": 6.0,
+      "Saturday": 0.0,
+      "Sunday": 0.0
+    },
+    "notes": "Did she give up her Friday lunch break?"
+  },
+  "Lucky_Masilela": {
+    "first_name": "Lucky",
+    "last_name": "Masilela",
+    "employee_number": "RDS00041",
+    "area": "Gauteng",
+    "is_meibc_member": true,
+    "required_hours": {
+      "Monday": 8.5,
+      "Tuesday": 8.5,
+      "Wednesday": 8.5,
+      "Thursday": 8.5,
+      "Friday": 6.0,
+      "Saturday": 0.0,
+      "Sunday": 0.0
+    },
+    "notes": ""
+  },
+  "Awie_Janse Van Vuuren": {
+    "first_name": "Awie",
+    "last_name": "Janse Van Vuuren",
+    "employee_number": "RDS00044",
+    "area": "Gauteng",
+    "is_meibc_member": false,
+    "required_hours": {
+      "Monday": 8.5,
+      "Tuesday": 8.5,
+      "Wednesday": 8.5,
+      "Thursday": 8.5,
+      "Friday": 6.0,
+      "Saturday": 0.0,
+      "Sunday": 0.0
+    },
+    "notes": ""
+  },
+  "Abdul_Isaacs": {
+    "first_name": "Abdul",
+    "last_name": "Isaacs",
+    "employee_number": "RDS00045",
+    "area": "Workshop",
+    "is_meibc_member": true,
+    "required_hours": {
+      "Monday": 8.75,
+      "Tuesday": 8.75,
+      "Wednesday": 8.75,
+      "Thursday": 8.75,
+      "Friday": 5.0,
       "Saturday": 0.0,
       "Sunday": 0.0
     },
