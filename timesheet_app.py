@@ -1238,7 +1238,11 @@ def generate_report_page():
         
         st.subheader("4. Generate Report")
         
-        if st.button("Generate Excel Report", type="primary"):
+        # Initialize session state for report
+        if 'report_data' not in st.session_state:
+            st.session_state.report_data = None
+        
+        if st.button("Generate Excel Report", type="primary", key="generate_report_btn"):
             try:
                 with st.spinner("Generating report..."):
                     wb = generate_excel_report(timesheet_data, employee_data, skip_unknown, public_holidays, standby_days)
@@ -1250,21 +1254,33 @@ def generate_report_page():
                     
                     filename = f"Timesheet_Report_{start_date.strftime('%Y%m%d')}_{end_date.strftime('%Y%m%d')}.xlsx"
                     
-                    # Generate unique key for download button to prevent re-render issues
-                    download_key = f"download_{start_date.strftime('%Y%m%d')}_{end_date.strftime('%Y%m%d')}_{len(standby_days)}"
-                    
-                    st.download_button(
-                        label="📥 Download Excel Report",
-                        data=buffer,
-                        file_name=filename,
-                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        key=download_key
-                    )
+                    # Store in session state to persist across re-renders
+                    st.session_state.report_data = {
+                        'buffer': buffer.getvalue(),  # Store bytes, not BytesIO object
+                        'filename': filename
+                    }
                     
                     st.success("✅ Report generated successfully!")
             except Exception as e:
                 st.error(f"❌ Error generating report: {str(e)}")
                 st.error("Please check your data and try again. If the problem persists, contact support.")
+        
+        # Show download button if report exists in session state
+        if st.session_state.report_data is not None:
+            download_key = f"download_{st.session_state.report_data['filename']}"
+            
+            st.download_button(
+                label="📥 Download Excel Report",
+                data=st.session_state.report_data['buffer'],
+                file_name=st.session_state.report_data['filename'],
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                key=download_key
+            )
+            
+            # Clear button to generate new report
+            if st.button("🔄 Generate New Report", key="clear_report_btn"):
+                st.session_state.report_data = None
+                st.rerun()
 
 if __name__ == "__main__":
     main_app()
