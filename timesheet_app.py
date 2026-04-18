@@ -1031,7 +1031,7 @@ def generate_excel_report(timesheet_data, employee_data, skip_unknown, public_ho
         col_idx += 1
         
         # Standby Days
-        standby = standby_days.get(emp_name, 0)
+        standby = standby_days.get(emp_name, 0) if standby_days else 0
         summary_sheet.cell(summary_row, col_idx, round(standby, 2) if standby > 0 else "")
         col_idx += 1
         
@@ -1239,23 +1239,32 @@ def generate_report_page():
         st.subheader("4. Generate Report")
         
         if st.button("Generate Excel Report", type="primary"):
-            with st.spinner("Generating report..."):
-                wb = generate_excel_report(timesheet_data, employee_data, skip_unknown, public_holidays, standby_days)
-                
-                from io import BytesIO
-                buffer = BytesIO()
-                wb.save(buffer)
-                buffer.seek(0)
-                
-                filename = f"Timesheet_Report_{start_date.strftime('%Y%m%d')}_{end_date.strftime('%Y%m%d')}.xlsx"
-                st.download_button(
-                    label="📥 Download Excel Report",
-                    data=buffer,
-                    file_name=filename,
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                )
-                
-                st.success("✅ Report generated successfully!")
+            try:
+                with st.spinner("Generating report..."):
+                    wb = generate_excel_report(timesheet_data, employee_data, skip_unknown, public_holidays, standby_days)
+                    
+                    from io import BytesIO
+                    buffer = BytesIO()
+                    wb.save(buffer)
+                    buffer.seek(0)
+                    
+                    filename = f"Timesheet_Report_{start_date.strftime('%Y%m%d')}_{end_date.strftime('%Y%m%d')}.xlsx"
+                    
+                    # Generate unique key for download button to prevent re-render issues
+                    download_key = f"download_{start_date.strftime('%Y%m%d')}_{end_date.strftime('%Y%m%d')}_{len(standby_days)}"
+                    
+                    st.download_button(
+                        label="📥 Download Excel Report",
+                        data=buffer,
+                        file_name=filename,
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        key=download_key
+                    )
+                    
+                    st.success("✅ Report generated successfully!")
+            except Exception as e:
+                st.error(f"❌ Error generating report: {str(e)}")
+                st.error("Please check your data and try again. If the problem persists, contact support.")
 
 if __name__ == "__main__":
     main_app()
