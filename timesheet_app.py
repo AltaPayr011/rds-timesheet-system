@@ -881,6 +881,12 @@ def generate_excel_report(timesheet_data, employee_data, skip_unknown, public_ho
         for entry in entries:
             all_job_types.add(entry['job_type'])
     
+    # Add potential public holiday overtime types that may be created during reclassification
+    # These ensure columns appear even if not in original timesheet data
+    potential_ph_overtimes = ["Overtime 1.0", "Overtime 1.3", "Overtime 2.5"]
+    for ot_type in potential_ph_overtimes:
+        all_job_types.add(ot_type)
+    
     # Define standard columns
     standard_columns = ["Normal Working Hours", "Paid Leave - Any type", "Unpaid Leave - Any Type"]
     
