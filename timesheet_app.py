@@ -110,7 +110,7 @@ def login_page():
                 st.session_state['logged_in'] = True
                 st.session_state['username'] = username
                 st.session_state['is_admin'] = users[username].get('is_admin', False)
-                st.experimental_rerun()
+                st.rerun()
             else:
                 st.error("Invalid username or password")
 
@@ -198,7 +198,7 @@ def user_management_page():
                 }
                 save_users(users)
                 st.success(f"User '{new_username}' created successfully")
-                st.experimental_rerun()
+                st.rerun()
         else:
             st.error("Please enter both username and password")
     
@@ -1103,7 +1103,7 @@ def main_app():
             st.session_state['logged_in'] = False
             st.session_state['username'] = None
             st.session_state['is_admin'] = False
-            st.experimental_rerun()
+            st.rerun()
     
     # Main content
     if page == "👥 User Management":
@@ -1292,7 +1292,7 @@ def generate_report_page():
             # Clear button to generate new report
             if st.button("🔄 Generate New Report", key="clear_report_btn"):
                 st.session_state.report_data = None
-                st.experimental_rerun()
+                st.rerun()
 
 if __name__ == "__main__":
     main_app()
