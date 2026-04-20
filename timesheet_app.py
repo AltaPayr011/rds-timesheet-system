@@ -537,17 +537,28 @@ def calculate_required_hours(employee_key, dates, employee_data):
     return required
 
 # Apply OT/Call Out rounding rule
-def apply_ot_rounding(entries, is_meibc_member=False):
+def apply_ot_rounding(entries, is_meibc_member=False, public_holidays=None):
     """
     For Overtime 2.0 and Call Out 2.0:
     - MEIBC on Sunday: Overtime 2.0 minimum 8h, Call Out 2.0 minimum 4h
     - Non-MEIBC on Sunday: If hours < 4, round UP to 4
     - Regular weekdays and Saturdays: NO rounding (as clocked)
+    - Public holidays: SKIP (handled by reclassification)
     """
+    # Convert public holidays to set of date strings for fast lookup
+    if public_holidays:
+        holiday_dates = {h.strftime('%Y/%m/%d') for h in public_holidays}
+    else:
+        holiday_dates = set()
+    
     # Group by date and job type, track day of week
     by_date_and_type = {}
     
     for entry in entries:
+        # SKIP public holiday dates - they're handled by reclassification
+        if entry['date_str'] in holiday_dates:
+            continue
+            
         if 'Overtime 2.0' in entry['job_type'] or 'Call Out 2.0' in entry['job_type']:
             key = (entry['date_str'], entry['job_type'])
             if key not in by_date_and_type:
@@ -993,7 +1004,8 @@ def generate_excel_report(timesheet_data, employee_data, skip_unknown, public_ho
                 job_totals[job_type] += hours
         
         # Apply rounding for Overtime 2.0 and Call Out 2.0 (with MEIBC Sunday rules)
-        rounded_totals = apply_ot_rounding(entries, is_meibc_member)
+        # IMPORTANT: Pass public_holidays so rounding skips those dates (handled by reclassification)
+        rounded_totals = apply_ot_rounding(entries, is_meibc_member, public_holidays)
         
         # Update job_totals with rounded values
         for job_type, rounded_value in rounded_totals.items():
