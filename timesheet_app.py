@@ -10,6 +10,9 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill
 import base64
 
+# Configure page - MUST be first Streamlit command
+st.set_page_config(page_title="RDS Timesheet System", page_icon="📊", layout="wide")
+
 # File paths
 EMPLOYEE_DATA_FILE = "employee_data.json"
 USERS_FILE = "users.json"
@@ -1072,8 +1075,6 @@ def generate_excel_report(timesheet_data, employee_data, skip_unknown, public_ho
 
 # Main application
 def main_app():
-    st.set_page_config(page_title="RDS Timesheet System", page_icon="📊", layout="wide")
-    
     if 'logged_in' not in st.session_state:
         st.session_state['logged_in'] = False
     
